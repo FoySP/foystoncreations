@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="referrer" content="no-referrer">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; base-uri 'none'; form-action 'none'">
+  <title>Connect Etsy · FoystonCreations</title>
+  <style>
+    *{box-sizing:border-box}body{margin:0;min-height:100vh;display:grid;place-items:center;background:#101d29;color:#f7edda;font:17px/1.65 Georgia,serif;padding:28px}main{max-width:650px;width:100%;border:1px solid #92784a;padding:42px;border-radius:12px}h1{font-size:36px;font-weight:normal;margin:0 0 30px;color:#dfbf7d}h2{font-size:24px;font-weight:normal}p{color:#ded7cb}textarea{width:100%;min-height:130px;padding:14px;background:#f7f2e8;color:#18212b;border:0;border-radius:5px;font:14px/1.5 monospace;resize:vertical}button{margin-top:16px;padding:13px 22px;border:0;border-radius:5px;background:#dfbf7d;color:#15202a;font:inherit;cursor:pointer}button:focus-visible,textarea:focus-visible{outline:3px solid white;outline-offset:4px}[hidden]{display:none}
+  </style>
+</head>
+<body><main>
+  <h1>FoystonCreations</h1>
+  <h2 id="heading">Etsy connection</h2>
+  <p id="message">This page receives the response when you connect the FoystonCreations publisher to Etsy. Start the connection from the publisher on your computer.</p>
+  <section id="response" hidden>
+    <label for="callback">Copy this response into the local publisher to finish connecting.</label>
+    <textarea id="callback" readonly spellcheck="false"></textarea>
+    <button id="copy" type="button">Copy connection response</button>
+    <p id="status" role="status"></p>
+    <p>Keep this response private. The publisher verifies the request and stores your access tokens on your computer.</p>
+  </section>
+</main>
+<script>
+  const callbackUrl = window.location.href;
+  const params = new URLSearchParams(window.location.search);
+  history.replaceState(null, '', window.location.pathname);
+  const heading = document.getElementById('heading');
+  const message = document.getElementById('message');
+  if (params.has('error')) {
+    heading.textContent = 'Connection was not completed';
+    message.textContent = 'Etsy returned an authorization error. Restart the connection from the local publisher.';
+  } else if (params.get('code') && params.get('state')) {
+    heading.textContent = 'Finish connecting on your computer';
+    message.textContent = 'Etsy has returned your authorization response.';
+    document.getElementById('response').hidden = false;
+    document.getElementById('callback').value = callbackUrl;
+  }
+  document.getElementById('copy').addEventListener('click', async () => {
+    try {
+      await navigator.clipboard.writeText(callbackUrl);
+      document.getElementById('status').textContent = 'Copied. Return to the local publisher.';
+    } catch {
+      document.getElementById('callback').select();
+      document.getElementById('status').textContent = 'Select and copy the response above.';
+    }
+  });
+</script></body>
+</html>
